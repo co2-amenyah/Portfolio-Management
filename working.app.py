@@ -6,8 +6,9 @@ st.write("Starting app...")
 # Accessing secrets
 try:
     st.write("Accessing secrets...")
-    api_key = st.secrets["api_key"]
-    another_secret = st.secrets["another_secret"]
+    st.write(st.secrets)  # Print all available secrets
+    api_key = st.secrets["secrets"]["api_key"]
+    another_secret = st.secrets["secrets"]["another_secret"]
 except Exception as e:
     st.error(f"Error accessing secrets: {e}")
     api_key = None

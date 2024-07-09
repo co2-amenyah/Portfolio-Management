@@ -1,0 +1,13 @@
+# Minimal script to check TensorFlow and Keras imports
+try:
+    from tensorflow import keras
+    from tensorflow.keras.models import Sequential
+    from tensorflow.keras.layers import LSTM, Dense, Dropout
+    from tensorflow.keras.optimizers import Adam
+    print("TensorFlow and Keras imports successful")
+except Exception as e:
+    print(f"Error during imports: {e}")
+
+
+
+

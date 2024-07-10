@@ -1,3 +1,18 @@
+# Accessing secrets
+try:
+    api_key = st.secrets["api_key"]
+    another_secret = st.secrets["another_secret"]
+except Exception as e:
+    st.error(f"Error accessing secrets: {e}")
+
+# Import TensorFlow with error handling
+try:
+    from tensorflow.keras.models import load_model
+    st.write("TensorFlow imported successfully")
+except Exception as e:
+    st.error(f"Error importing TensorFlow: {e}")
+
+
 
 import streamlit as st
 import os

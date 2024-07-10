@@ -726,6 +726,7 @@ def load_random_forest_model():
     except Exception as e:
         return None
 
+# Load SAC model function with enhanced error handling
 def load_sac_model():
     try:
         sac_model_dir = os.path.join(MODEL_DIR, "sac_portfolio_optimisation_model")
@@ -733,17 +734,34 @@ def load_sac_model():
         critic_path = os.path.join(sac_model_dir, "critic.optimizer.pth")
         ent_coef_optimizer_path = os.path.join(sac_model_dir, "ent_coef_optimizer.pth")
         
+        st.write(f"Loading actor from {actor_path}")
+        st.write(f"Loading critic from {critic_path}")
+        st.write(f"Loading ent_coef_optimizer from {ent_coef_optimizer_path}")
+        
         actor = torch.load(actor_path, map_location=torch.device('cpu'))
         critic = torch.load(critic_path, map_location=torch.device('cpu'))
         ent_coef_optimizer = torch.load(ent_coef_optimizer_path, map_location=torch.device('cpu'))
         
         return actor, critic, ent_coef_optimizer
     except Exception as e:
+        st.error(f"Error loading SAC model: {e}")
         return None, None, None
 
 # Check if model files exist
 def check_model_file(filename):
     return os.path.isfile(os.path.join(MODEL_DIR, filename))
+    exists = os.path.isfile(file_path)
+    st.write(f"Checking if model file exists: {file_path} - {exists}")
+    return exists
+
+# Display the contents of the MODEL_DIR for diagnostic purposes
+def list_model_dir_contents():
+    try:
+        contents = os.listdir(MODEL_DIR)
+        st.write(f"Contents of {MODEL_DIR}: {contents}")
+    except Exception as e:
+        st.error(f"Error listing contents of {MODEL_DIR}: {e}")
+
 
 # Check model files
 if not check_model_file("bi_lstm_model.keras"):

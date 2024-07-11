@@ -37,12 +37,29 @@ try:
 except Exception as e:
     st.error(f"Error accessing secrets: {e}")
 
+import streamlit as st
+
 # Import TensorFlow with error handling
 try:
     from tensorflow.keras.models import load_model
-    st.write("TensorFlow imported successfully")
+    from tensorflow.keras.optimizers import Adam
 except Exception as e:
     st.error(f"Error importing TensorFlow: {e}")
+
+# Sample function to check TensorFlow functionality
+def test_tensorflow():
+    try:
+        model = load_model('path/to/sample_model.h5')  # Replace with an actual model path
+        st.success("TensorFlow model loaded successfully.")
+    except Exception as e:
+        st.error(f"Error loading TensorFlow model: {e}")
+
+# Main application
+if __name__ == "__main__":
+    st.title("Streamlit Deployment Test")
+
+    # Test TensorFlow functionality
+    test_tensorflow()
 
 
 # Function to handle the user profile form
@@ -710,33 +727,32 @@ def run_market_trends_analysis(data):
 
     st.plotly_chart(fig)
 
-# Model loading functions
-def load_bi_lstm_model():
-    try:
-        model = load_model(os.path.join(MODEL_DIR, "bi_lstm_model.keras"), compile=False)
-        model.compile(optimizer=Adam(), loss='mse')
-        return model
-    except Exception as e:
-        return None
+import os
+import joblib
+import torch
+import streamlit as st
+from tensorflow.keras.models import load_model
+from tensorflow.keras.optimizers import Adam
 
-def load_random_forest_model():
-    try:
-        model = joblib.load(os.path.join(MODEL_DIR, "random_forest_volatility_model.pkl"))
-        return model
-    except Exception as e:
-        return None
+# Define the directory where the SAC model files are stored
+SAC_MODEL_DIR = './sac_portfolio_optimisation_model/'
+
+# Define the paths for other model files
+BI_LSTM_MODEL_PATH = './bi_lstm_model.keras'
+RANDOM_FOREST_MODEL_PATH = './random_forest_volatility_model.pkl'
+IMPUTER_PATH = './imputer.joblib'
+PREPROCESSING_STEPS_PATH = './preprocessing_steps.pkl'
+
+# Check if a model file exists
+def check_model_file(filepath):
+    return os.path.isfile(filepath)
 
 # Load SAC model function with enhanced error handling
 def load_sac_model():
     try:
-        sac_model_dir = os.path.join(MODEL_DIR, "sac_portfolio_optimisation_model")
-        actor_path = os.path.join(sac_model_dir, "policy.pth")
-        critic_path = os.path.join(sac_model_dir, "critic.optimizer.pth")
-        ent_coef_optimizer_path = os.path.join(sac_model_dir, "ent_coef_optimizer.pth")
-        
-        st.write(f"Loading actor from {actor_path}")
-        st.write(f"Loading critic from {critic_path}")
-        st.write(f"Loading ent_coef_optimizer from {ent_coef_optimizer_path}")
+        actor_path = os.path.join(SAC_MODEL_DIR, "policy.pth")
+        critic_path = os.path.join(SAC_MODEL_DIR, "critic.optimizer.pth")
+        ent_coef_optimizer_path = os.path.join(SAC_MODEL_DIR, "ent_coef_optimizer.pth")
         
         actor = torch.load(actor_path, map_location=torch.device('cpu'))
         critic = torch.load(critic_path, map_location=torch.device('cpu'))
@@ -747,20 +763,83 @@ def load_sac_model():
         st.error(f"Error loading SAC model: {e}")
         return None, None, None
 
-# Check if model files exist
-def check_model_file(filename):
-    return os.path.isfile(os.path.join(MODEL_DIR, filename))
-    exists = os.path.isfile(file_path)
-    st.write(f"Checking if model file exists: {file_path} - {exists}")
-    return exists
-
-# Display the contents of the MODEL_DIR for diagnostic purposes
-def list_model_dir_contents():
+# Load Random Forest model function with enhanced error handling
+def load_random_forest_model():
     try:
-        contents = os.listdir(MODEL_DIR)
-        st.write(f"Contents of {MODEL_DIR}: {contents}")
+        if check_model_file(RANDOM_FOREST_MODEL_PATH):
+            return joblib.load(RANDOM_FOREST_MODEL_PATH)
+        else:
+            st.error("Random Forest model file not found.")
+            return None
     except Exception as e:
-        st.error(f"Error listing contents of {MODEL_DIR}: {e}")
+        st.error(f"Error loading Random Forest model: {e}")
+        return None
+
+# Load BI-LSTM model function with enhanced error handling
+def load_bi_lstm_model():
+    try:
+        if check_model_file(BI_LSTM_MODEL_PATH):
+            bi_lstm_model = load_model(BI_LSTM_MODEL_PATH, compile=False)
+            bi_lstm_model.compile(optimizer=Adam(), loss='mse')
+            return bi_lstm_model
+        else:
+            st.error("BI-LSTM model file not found.")
+            return None
+    except Exception as e:
+        st.error(f"Error loading BI-LSTM model: {e}")
+        return None
+
+# Load Imputer function with enhanced error handling
+def load_imputer():
+    try:
+        if check_model_file(IMPUTER_PATH):
+            return joblib.load(IMPUTER_PATH)
+        else:
+            st.error("Imputer file not found.")
+            return None
+    except Exception as e:
+        st.error(f"Error loading Imputer: {e}")
+        return None
+
+# Load Preprocessing Steps function with enhanced error handling
+def load_preprocessing_steps():
+    try:
+        if check_model_file(PREPROCESSING_STEPS_PATH):
+            return joblib.load(PREPROCESSING_STEPS_PATH)
+        else:
+            st.error("Preprocessing Steps file not found.")
+            return None
+    except Exception as e:
+        st.error(f"Error loading Preprocessing Steps: {e}")
+        return None
+
+# Usage example
+if __name__ == "__main__":
+    # Check if specific SAC model files exist
+    required_files = ['policy.pth', 'critic.optimizer.pth', 'ent_coef_optimizer.pth']
+    sac_model_loaded = all(check_model_file(os.path.join(SAC_MODEL_DIR, file)) for file in required_files)
+
+    
+
+    # Load the Random Forest model
+    random_forest_model = load_random_forest_model()
+   
+
+    # Load the BI-LSTM model
+    bi_lstm_model = load_bi_lstm_model()
+ 
+
+    # Load the Imputer
+    imputer = load_imputer()
+   
+
+    # Load the Preprocessing Steps
+    preprocessing_steps = load_preprocessing_steps()
+  
+
+
+
+
 
 
 # Check model files

@@ -49,7 +49,7 @@ except Exception as e:
 # Sample function to check TensorFlow functionality
 def test_tensorflow():
     try:
-        model = load_model('path/to/sample_model.h5')  # Replace with an actual model path
+        model = load_model('test_model.h5')  # Replace with an actual model path
         st.success("TensorFlow model loaded successfully.")
     except Exception as e:
         st.error(f"Error loading TensorFlow model: {e}")
